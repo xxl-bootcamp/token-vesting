@@ -254,12 +254,12 @@ export type Vesting = {
           "type": "i64"
         },
         {
-          "name": "cliffTime",
-          "type": "i64"
-        },
-        {
           "name": "totalAmount",
           "type": "u64"
+        },
+        {
+          "name": "cliffTime",
+          "type": "i64"
         }
       ]
     },

@@ -12,10 +12,7 @@ declare_id!("coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF");
 pub mod vesting {
     use super::*;
 
-    pub fn create_vesting_account(
-        ctx: Context<CreateVestingAccount>,
-        company_name: String
-    ) -> Result<()> {
+    pub fn create_vesting_account(ctx: Context<CreateVestingAccount>, company_name: String) -> Result<()> {
         *ctx.accounts.vesting_account = VestingAccount {
             company_name,
             owner: ctx.accounts.signer.key(),
@@ -32,8 +29,8 @@ pub mod vesting {
         ctx: Context<CreateEmployeeAccount>,
         start_time: i64,
         end_time: i64,
-        cliff_time: i64,
-        total_amount: u64
+        total_amount: u64,
+        cliff_time: i64
     ) -> Result<()> {
         *ctx.accounts.employee_account = EmployeeAccount {
             benificiary: ctx.accounts.benificiary.key(),
@@ -57,14 +54,14 @@ pub mod vesting {
         }
 
         let time_since_now = now.saturating_sub(employee_account.start_time);
-        let total_vesting_time = employee_account.end_time.saturating_sub(
-            employee_account.start_time
-        );
+        let total_vesting_time = employee_account.end_time.saturating_sub(employee_account.start_time);
+        msg!("total_vesting_time: {}", total_vesting_time);
 
         if total_vesting_time == 0 {
             return Err(ErrorCode::InvalidVestingPeriod.into());
         }
 
+        msg!("total_amount: {}", employee_account.total_amount);
         let vested_amount = if now > employee_account.end_time {
             employee_account.total_amount
         } else {
@@ -75,6 +72,8 @@ pub mod vesting {
                 }
             }
         };
+
+        msg!("vested_amount: {}", vested_amount);
 
         let claimable_amount = vested_amount.saturating_sub(employee_account.total_withdrawn);
         if claimable_amount == 0 {
@@ -111,13 +110,7 @@ pub struct CreateVestingAccount<'info> {
     #[account(mut)]
     pub signer: Signer<'info>,
 
-    #[account(
-        init,
-        payer = signer,
-        space = 8 + VestingAccount::INIT_SPACE,
-        seeds = [company_name.as_ref()],
-        bump
-    )]
+    #[account(init, payer = signer, space = 8 + VestingAccount::INIT_SPACE, seeds = [company_name.as_ref()], bump)]
     pub vesting_account: Account<'info, VestingAccount>,
 
     pub mint: InterfaceAccount<'info, Mint>,

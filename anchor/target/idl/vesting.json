@@ -248,12 +248,12 @@
           "type": "i64"
         },
         {
-          "name": "cliff_time",
-          "type": "i64"
-        },
-        {
           "name": "total_amount",
           "type": "u64"
+        },
+        {
+          "name": "cliff_time",
+          "type": "i64"
         }
       ]
     },
